@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+
+  "name": "New Tab todo list",
+  "description": "An extension yo",
+  "version": "1.0",
+
+  "permissions" : ["management", "storage"],
+  "chrome_url_overrides" : {
+	  "newtab": "index.html"
+  }
+}
