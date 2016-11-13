@@ -5,11 +5,12 @@
             .date {{ date }}
             button(@click="taskAdd(date)") +
         div.boxes
-            div.box(v-for="(task, index) in allTasks[date]", :class="{done: task.done}")
+            div.box(v-for="(task, index) in allTasks[date]", :class="{done: task.done, highlighted: isHighlighted(task) && !(task.done)}")
                 .text
                     textarea(contenteditable="true", v-model="task.name")
                 .buttons
                     .button(@click="task.done = !(task.done)") Done
+                    .button(@click="toggleHighlight(task)") Select
                     .button(@click="allTasks[date].splice(index, 1)") Delete
 </template>
 
@@ -28,7 +29,8 @@ export default {
                 "December 3rd, 2003": [
                     {name: "hello", done: false}
                     ]
-                }
+                },
+            highlighted: []
             }
     },
     created: function() {
@@ -120,6 +122,17 @@ export default {
         },
         clear: function() {
             localStorage.removeItem(STORAGE_KEY)
+        },
+        toggleHighlight: function(task) {
+            if(this.highlighted.indexOf(task) == -1) {
+                this.highlighted.push(task)
+            }
+            else {
+                this.highlighted.splice(this.highlighted.indexOf(task), 1)
+            }
+        },
+        isHighlighted: function(task) {
+            return (this.highlighted.indexOf(task) != -1)
         }
     }
 }
@@ -191,12 +204,18 @@ body
         .button
             display: none
             cursor: pointer
+            &:hover
+                text-decoration: underline
 
     &:hover .buttons .button
             display: block      
 
 .box.done
     background-color: alpha(#77E25C, .75)
+
+.box.highlighted
+    background-color: alpha(#00BFFF, .5)
+
 
 .boxes
     display: flex
