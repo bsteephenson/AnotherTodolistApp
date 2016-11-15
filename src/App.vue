@@ -5,13 +5,13 @@
             .date {{ date }}
             button(@click="taskAdd(date)") +
         div.boxes
-            div.box(v-for="(task, index) in allTasks[date]", :class="{done: task.done, highlighted: isHighlighted(task) && !(task.done)}")
+            div.box(v-for="(task, taskIndex) in allTasks[date]", :class="{done: task.done, highlighted: task.highlighted && !(task.done) && (index == 0)}")
                 .text
                     textarea(contenteditable="true", v-model="task.name")
                 .buttons
                     .button(@click="task.done = !(task.done)") Done
-                    .button(@click="toggleHighlight(task)") Select
-                    .button(@click="allTasks[date].splice(index, 1)") Delete
+                    .button(v-if= "index == 0" @click="task.highlighted = !(task.highlighted)") Select
+                    .button(@click="allTasks[date].splice(taskIndex, 1)") Delete
 </template>
 
 <script>
@@ -27,10 +27,9 @@ export default {
         return {
             allTasks: {
                 "December 3rd, 2003": [
-                    {name: "hello", done: false}
+                    {name: "hello", done: false, highlighted: false}
                     ]
-                },
-            highlighted: []
+                }
             }
     },
     created: function() {
@@ -118,21 +117,20 @@ export default {
                     allTasks[dateString] = notDone
                 }
             }
+
+            // Legacy: old tasks did not have a highlighted property
+            for (var key in allTasks) {
+                for (var i in allTasks[key]) {
+                    if (!('highlighted' in allTasks[key][i])) {
+                        allTasks[key][i].highlighted = false
+                    }
+                }
+            }
+
             this.allTasks = allTasks
         },
         clear: function() {
             localStorage.removeItem(STORAGE_KEY)
-        },
-        toggleHighlight: function(task) {
-            if(this.highlighted.indexOf(task) == -1) {
-                this.highlighted.push(task)
-            }
-            else {
-                this.highlighted.splice(this.highlighted.indexOf(task), 1)
-            }
-        },
-        isHighlighted: function(task) {
-            return (this.highlighted.indexOf(task) != -1)
         }
     }
 }
