@@ -86,7 +86,7 @@ export default {
         },
 
         taskAdd: function(date) {
-            this.allTasks[date].push({name: "", done: false})
+            this.allTasks[date].push({name: "", done: false, highlighted: false})
         },
         save: function () {
             var stuff = JSON.stringify(this.allTasks)
