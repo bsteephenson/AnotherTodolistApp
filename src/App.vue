@@ -1,16 +1,16 @@
 <template lang="jade">
 .main-container
-    div.day(v-for="(date, index) in sortedDates")
+    div.day(v-for="(date, index) in sortedDates", :class="{today: (index == 0)}")
         div.header
             .date {{ date }}
             button(@click="taskAdd(date)") +
         div.boxes
-            div.box(v-for="(task, taskIndex) in allTasks[date]", :class="{done: task.done, highlighted: task.highlighted && !(task.done) && (index == 0)}")
+            div.box(v-for="(task, taskIndex) in allTasks[date]", :class="{done: task.done, highlighted: task.highlighted && !(task.done)}")
                 .text
                     textarea(contenteditable="true", v-model="task.name")
                 .buttons
-                    .button(@click="task.done = !(task.done)") Done
-                    .button(v-if= "index == 0" @click="task.highlighted = !(task.highlighted)") Select
+                    .button(@click="toggleTaskState(task)") {{ task.highlighted ? "Done" : "Select"  }}
+                    .button(@click="toggleTaskRepeat(task)") {{ task.repeat ? "Repeating" : "Repeat" }}
                     .button(@click="allTasks[date].splice(taskIndex, 1)") Delete
 </template>
 
@@ -86,7 +86,28 @@ export default {
         },
 
         taskAdd: function(date) {
-            this.allTasks[date].push({name: "", done: false, highlighted: false})
+            this.allTasks[date].push({name: "", done: false, highlighted: false, repeat: false})
+        },
+        toggleTaskState: function(task) {
+            if (task.done) {
+                task.done = false
+                task.highlighted = false
+            }
+            else if (task.highlighted) {
+                task.done = true
+            }
+            else {
+                task.highlighted = true
+            }
+        },
+        toggleTaskRepeat : function(task) {
+            if (task.repeat) {
+                task.repeat = false
+            }
+            else {
+                task.repeat = true
+            }
+            console.log(task)
         },
         save: function () {
             var stuff = JSON.stringify(this.allTasks)
@@ -107,10 +128,12 @@ export default {
                     var lastday = this.sortDates(allTasks)[0]
                     var lastDateTasks = allTasks[lastday]
                     for (var i in lastDateTasks) {
-                        if (!(lastDateTasks[i].done)) {
+                        if (!(lastDateTasks[i].done) || (lastDateTasks[i].repeat)) {
                             var task = {}
                             task.name = lastDateTasks[i].name
                             task.done = false
+                            task.highlighted = false
+                            task.repeat = lastDateTasks[i].repeat || false
                             notDone.push(task)
                         }
                     }
@@ -118,12 +141,13 @@ export default {
                 }
             }
 
-            // Legacy: old tasks did not have a highlighted property
+            // Legacy: old tasks did not have a highlighted or a repeat property
             for (var key in allTasks) {
                 for (var i in allTasks[key]) {
                     if (!('highlighted' in allTasks[key][i])) {
                         allTasks[key][i].highlighted = false
                     }
+                    allTasks[key][i].repeat = allTasks[key][i].repeat || false
                 }
             }
 
@@ -178,7 +202,6 @@ body
     margin: 1px
     display: flex
     flex-direction: column
-    
     .text
         height: 90%
         textarea
@@ -194,7 +217,7 @@ body
     
     .buttons
         height: 10%
-        font-size: 12px
+        font-size: 10px
         display: flex
         flex-direction: row
         justify-content: space-between
@@ -218,6 +241,11 @@ body
 .boxes
     display: flex
     flex-wrap: wrap
+
+.day
+    opacity: .5
+.day.today
+    opacity: 1
 
 
 </style>
