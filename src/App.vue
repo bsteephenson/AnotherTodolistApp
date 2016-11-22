@@ -9,9 +9,14 @@
                 .text
                     textarea(contenteditable="true", v-model="task.name")
                 .buttons
-                    .button(@click="toggleTaskState(task)") {{ task.highlighted ? "Done" : "Select"  }}
-                    .button(@click="toggleTaskRepeat(task)") {{ task.repeat ? "Repeating" : "Repeat" }}
-                    .button(@click="allTasks[date].splice(taskIndex, 1)") Delete
+                    //- .button(@click="toggleTaskState(task)") {{ task.highlighted ? "Done" : "Select"  }}
+                    //- .button(@click="toggleTaskRepeat(task)") {{ task.repeat ? "Repeating" : "Repeat" }}
+                    //- .button(@click="allTasks[date].splice(taskIndex, 1)") Delete
+                    i.button(@click="task.done = !(task.done)", class="fa fa-check", :class="{selected: task.done}")
+                    i.button(@click="task.highlighted = !(task.highlighted)", class="fa fa-star", :class="{selected: task.highlighted}")
+                    i.button(@click="task.repeat = !(task.repeat)", class="fa fa-repeat", :class="{selected: task.repeat}")
+                    i.button(@click="allTasks[date].splice(taskIndex, 1)", class="fa fa-trash")
+
 </template>
 
 <script>
@@ -217,16 +222,20 @@ body
     
     .buttons
         height: 10%
-        font-size: 10px
+        font-size: 14px
         display: flex
         flex-direction: row
+        flex-wrap: wrap
         justify-content: space-between
         
         .button
             display: none
             cursor: pointer
+            color: alpha(black, .25)
             &:hover
-                text-decoration: underline
+                color: alpha(black, 1)
+            &.selected
+                color: alpha(black, 1)
 
     &:hover .buttons .button
             display: block      
