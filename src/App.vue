@@ -1,21 +1,21 @@
 <template lang="jade">
 .main-container
+    div
+        button.toggleHiddenButton(@click="showHidden = !showHidden") Show hidden 
+            i(class = "fa", :class="{'fa-toggle-on': showHidden, 'fa-toggle-off': !showHidden}")
     div.day(v-for="(date, index) in sortedDates", :class="{today: (index == 0)}")
         div.header
             .date {{ date }}
             button(@click="taskAdd(date)") +
         div.boxes
-            div.box(v-for="(task, taskIndex) in allTasks[date]", :class="{done: task.done, highlighted: task.highlighted && !(task.done)}")
+            div.box(v-for="(task, taskIndex) in allTasks[date]", :class="{done: task.done, highlighted: task.highlighted && !(task.done)}" v-if="!(task.hidden) || showHidden")
                 .text
                     textarea(contenteditable="true", v-model="task.name")
                 .buttons
-                    //- .button(@click="toggleTaskState(task)") {{ task.highlighted ? "Done" : "Select"  }}
-                    //- .button(@click="toggleTaskRepeat(task)") {{ task.repeat ? "Repeating" : "Repeat" }}
-                    //- .button(@click="allTasks[date].splice(taskIndex, 1)") Delete
                     i.button(@click="task.done = !(task.done)", class="fa fa-check", :class="{selected: task.done}")
                     i.button(@click="task.highlighted = !(task.highlighted)", class="fa fa-star", :class="{selected: task.highlighted}")
                     i.button(@click="task.repeat = !(task.repeat)", class="fa fa-repeat", :class="{selected: task.repeat}")
-                    i.button(@click="allTasks[date].splice(taskIndex, 1)", class="fa fa-trash")
+                    i.button(@click="task.hidden = !(task.hidden)", class="fa fa-trash", :class="{selected: task.hidden}")
 
 </template>
 
@@ -34,7 +34,8 @@ export default {
                 "December 3rd, 2003": [
                     {name: "hello", done: false, highlighted: false}
                     ]
-                }
+                },
+            showHidden: false
             }
     },
     created: function() {
@@ -91,7 +92,7 @@ export default {
         },
 
         taskAdd: function(date) {
-            this.allTasks[date].push({name: "", done: false, highlighted: false, repeat: false})
+            this.allTasks[date].push({name: "", done: false, highlighted: false, repeat: false, hidden: false})
         },
         toggleTaskState: function(task) {
             if (task.done) {
@@ -133,7 +134,7 @@ export default {
                     var lastday = this.sortDates(allTasks)[0]
                     var lastDateTasks = allTasks[lastday]
                     for (var i in lastDateTasks) {
-                        if (!(lastDateTasks[i].done) || (lastDateTasks[i].repeat)) {
+                        if ((!(lastDateTasks[i].done) || (lastDateTasks[i].repeat)) && !(lastDateTasks[i].hidden)) {
                             var task = {}
                             task.name = lastDateTasks[i].name
                             task.done = false
@@ -153,6 +154,7 @@ export default {
                         allTasks[key][i].highlighted = false
                     }
                     allTasks[key][i].repeat = allTasks[key][i].repeat || false
+                    allTasks[key][i].hidden = allTasks[key][i].hidden || false
                 }
             }
 
@@ -256,5 +258,20 @@ body
 .day.today
     opacity: 1
 
+
+
+.toggleHiddenButton
+    padding-left: 0px
+    opacity: .1
+    &:hover
+        opacity: 1
+    margin-left: 0px
+    background-color: alpha(white, 0)
+    border: none
+    text-decoration: none
+    font-size: 12px
+    cursor: pointer
+    &:focus
+        outline: 0px solid transparent
 
 </style>
