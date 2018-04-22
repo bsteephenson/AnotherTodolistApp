@@ -18,6 +18,7 @@
                     i.button(@click="task.hidden = !(task.hidden)", class="fa fa-trash", :class="{selected: task.hidden}")
     hr
     div
+        p Purpose: keep a long running todo list, keep track of what you worked on or completed over time. 
         p Every not "completed" task that you add today will carry over to tomorrow.
         p Only green tasks are "completed".
         p If a task is recurring (the recurring symbol is on), then it will carry over to the next day even if it is completed today.
