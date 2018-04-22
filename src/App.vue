@@ -1,4 +1,4 @@
-<template lang="jade">
+<template lang="pug">
 .main-container
     div
         button.toggleHiddenButton(@click="showHidden = !showHidden") Show hidden 
@@ -16,6 +16,12 @@
                     i.button(@click="task.highlighted = !(task.highlighted)", class="fa fa-star", :class="{selected: task.highlighted}")
                     i.button(@click="task.repeat = !(task.repeat)", class="fa fa-repeat", :class="{selected: task.repeat}")
                     i.button(@click="task.hidden = !(task.hidden)", class="fa fa-trash", :class="{selected: task.hidden}")
+    hr
+    div
+        p Every not "completed" task that you add today will carry over to tomorrow.
+        p Only green tasks are "completed".
+        p If a task is recurring (the recurring symbol is on), then it will carry over to the next day even if it is completed today.
+        p Starring a task (making it blue) is just a visual aid. This can be used for keeping track of things worked on but not completed.
 
 </template>
 
